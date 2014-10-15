@@ -6,10 +6,11 @@ import java.io.File;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 
 public class ListCtrl extends JList {
 
-    private DefaultListModel<File> model;
+    private DefaultListModel<MyFile> model;
     private File[] files;
     private final String path = "//Epson0ee12c/usbstorage/EPSCAN/001/";
     //private final String path = "C:\\Users\\Christian\\Documents\\MMG\\";
@@ -18,21 +19,19 @@ public class ListCtrl extends JList {
         super();
         final JList list = this;
         final ViewerCtrl viewer = pdf;
-        
+
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         model = new DefaultListModel<>();
         addFiles();
         setModel(model);
+        setBorder(new EmptyBorder(1, 5, 1, 5));
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    int index = list.locationToIndex(e.getPoint());
-                    File item = model.getElementAt(index);
-                    viewer.openFile(item.getAbsolutePath());
-                }
+                MyFile item = model.getElementAt(((JList) e.getComponent()).locationToIndex(e.getPoint()));
+                viewer.openFile(item.getPath());
             }
         });
     }
@@ -41,7 +40,7 @@ public class ListCtrl extends JList {
         files = new File(path).listFiles((File dir, String filename) -> filename.toLowerCase().endsWith(".pdf"));
         if (files != null) {
             for (File file : files) {
-                model.addElement(file);
+                model.addElement(new MyFile(file));
             }
         }
     }
